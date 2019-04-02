@@ -1,0 +1,134 @@
+\documentclass[11pt]{article} % use larger type; default would be 10pt
+
+\usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
+
+% PAGE DIMENSIONS
+\usepackage{geometry} % to change the page dimensions
+\geometry{a4paper} % or letterpaper (US) or a5paper or....
+\geometry{margin=1in} % for example, change the margins to 2 inches all round
+% \geometry{landscape} % set up the page for landscape
+%   read geometry.pdf for detailed page layout information
+
+\usepackage{graphicx} % support the \includegraphics command and options
+\usepackage{mathtools}
+\usepackage{amssymb,amsmath}
+\usepackage{gensymb}
+\usepackage{float}
+\usepackage{epstopdf}
+
+%PACKAGES
+\usepackage{booktabs} % for much better looking tables
+\usepackage{array} % for better arrays (eg matrices) in maths
+\usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
+\usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
+\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+
+% HEADERS & FOOTERS
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt}
+\lhead{phys3071-as12-melsom-42593249}\chead{}\rhead{}
+\lfoot{}\cfoot{}\rfoot{}
+
+% SECTION TITLE APPEARANCE
+\usepackage{sectsty}
+\allsectionsfont{\sffamily\mdseries\upshape} % (See the fntguide.pdf for font help)
+\setcounter{secnumdepth}{-1} 
+
+% ToC (table of contents) APPEARANCE
+\usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography in the ToC
+\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
+\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+
+% END Article customizations
+
+\title{PHYS2041 Lab report 2\\ Single Photon Interference.}
+\author{Joshua Melsom - 42593249}
+\date{}
+
+\begin{document}
+
+
+\section{Question 1}
+\begin{figure}[!h]
+\centering
+\includegraphics[scale=0.8]{diagram.eps}
+\caption{Visualisation of the FTCS scheme.}
+\label{fig:appi}
+\end{figure}
+
+
+Using the notation $u^n _j = u(t_n, x_j)$ for $x_j = x_0 + j\Delta x, \, j=0,1,2...,J$ and $t_n = t_0 + n\Delta t, \, n=0,1,2,...N$ to approximate the PDE $\frac{\partial u}{\partial t} = -D\frac{\partial u}{\partial x}$. Starting with the approximations: \\
+
+
+$\displaystyle{\frac{\partial u}{\partial t}  \bigg|_{j,n} \approx \frac{u^{n+1}_j - u^n _j}{\Delta t}}$\\ [0.5em]
+
+$\displaystyle{\frac{\partial u}{\partial x} \bigg| _{j,n} \approx \frac{u^n_{j+1} - u^n_{j-1}}{2\Delta x}}$\\[0.5em]
+
+we rearrange our PDE, $i\frac{\partial \psi}{\partial t} = -\frac{\partial ^2 \psi}{\partial x^2} + V\psi $ to the form $\frac{\partial \psi}{\partial t} = i\frac{\partial ^2 \psi}{\partial x^2} -iV\psi $\\
+
+We can now construct a discrete version of our PDE using the above listed approximations. So our equation becomes \\
+
+\noindent $\frac{\psi ^{n+1} _j - \psi^n _j}{\Delta t} = i \bigg ( \frac{\psi ^n _{j+1} - 2\psi^n _j + \psi ^n _{j-1}}{(\Delta x)^2} \bigg ) - iV\psi^n _j$\\
+
+By rearranging the equation so that all $\psi ^{n+1}$ are on one side of the equation and all $\psi ^n$ are on the other side, and expanding the brackets, this becomes. \\
+
+\noindent $\psi ^{n+1} _j= \frac{i \Delta t}{(\Delta x)^2} \psi ^n _{j+1} - \frac{2i \Delta t}{(\Delta x)^2}\psi ^n _j + \frac{i \Delta t}{(\Delta x)^2} \psi ^n _{j-1} - i \Delta t V \psi ^n _j + \psi ^n _j$\\
+
+and now bringing out common factors\\
+
+\noindent $\psi ^{n+1} _j = \frac{i \Delta t}{(\Delta x)^2} \big ( \psi ^n _{j-1} + \psi ^n _{j+1} \big ) + \big ( 1 - \frac{2i \Delta t}{(\Delta x)^2} - i \Delta t V \big ) \psi ^N _j$\\
+
+Now to use the Crank-Nicolson Scheme we add this to \\
+
+\noindent $\psi ^{n+1} _j =\psi ^n _j +  \frac{i \Delta t}{(\Delta x)^2} \big ( \psi ^{n+1} _{j-1} + \psi ^{n+1} _{j} + \psi ^{n+1} _{j+1} \big ) - i \Delta t V \psi ^{n+1} _j $ \\
+
+After adding, and once again grouping the $\psi ^{n+1}$ terms on one side and the $\psi ^n$ terms to the other, we get: \\
+
+\noindent $2\psi ^{n+1} _ j + i\Delta t \psi ^{n+1} _j -  \frac{i \Delta t}{(\Delta x)^2} \big ( \psi^{n+1} _{j+1} - 2\psi ^{n+1} _j + \psi ^{n+1} _{j-1} \big ) =  \frac{i \Delta t}{(\Delta x)^2} \big ( \psi ^n _{j-1} + \psi ^n _{n+1} \big ) + \big ( 2 - i \Delta t V -  \frac{2i \Delta t}{(\Delta x)^2} \big ) \psi ^n _j$\\
+
+Which simplifies to: \\
+
+\noindent $ \big ( 2 + i\Delta t V(x_j) +  \frac{2i \Delta t}{(\Delta x)^2} \big ) \psi ^{n+1} _ j -  \frac{i \Delta t}{(\Delta x)^2} \big ( \psi ^{n+1} _{j-1} + \psi ^{n+1} _{j+1} \big ) =\\ [0.5em] \big ( 2 - i\Delta t V(x_j) -  \frac{2i \Delta t}{(\Delta x)^2} \big ) \psi ^n _ j +  \frac{i \Delta t}{(\Delta x)^2} \big ( \psi ^n _{j-1} + \psi ^n _{j+1} \big )$ \\
+
+Where I have also use the discrete positions to the external potential, $V(x)$.\\
+
+This can be converted to a system of linear equations: \\
+\begin{equation}
+\noindent
+ \begin{bmatrix}
+  (2 + i \Delta t V(x_j) + \frac{2i \Delta t}{(\Delta x)^2})&-\frac{i \Delta t}{(\Delta x)^2} &0& \cdots & 0 \\ [0.5em]
+  -\frac{i \Delta t}{(\Delta x)^2} &  (2 + i \Delta t V(x_j) + \frac{2i \Delta t}{(\Delta x)^2}) &-\frac{i \Delta t}{(\Delta x)^2}& \cdots &0 \\[0.5em]
+0                                                  & -\frac{i \Delta t}{(\Delta x)^2}                                        & \ddots                                       &\vdots & \vdots \\[0.5em]
+  \vdots  & \vdots &\cdots & \ddots &  -\frac{i \Delta t}{(\Delta x)^2}  \\[0.5em]
+  0 & 0 & -\frac{i \Delta t}{(\Delta x)^2} &(2 + i \Delta t V(x_j) + \frac{2i \Delta t}{(\Delta x)^2})
+ \end{bmatrix}
+\nonumber
+\end{equation}\\
+
+\begin{equation}
+ \begin{bmatrix}
+       \psi ^{n+1} _1  \\[0.5em]
+       \psi ^{n+1} _2 \\[0.5em]
+       \vdots \\[0.5em]
+       \psi ^{n+1} _{J-2} \\[0.5em]
+        \psi ^{n+1} _{J-1} 
+     \end{bmatrix} = 
+ \begin{bmatrix}
+       (2 - i \Delta t V(x_1) - \frac{2i \Delta t}{(\Delta x)^2}) \psi ^n _1 + \frac{i \Delta t}{(\Delta t)^2} (\psi ^n _0 + \psi ^n _2 ) + \frac{i \Delta t}{(\Delta x)^2} \psi^{n+1} _0 \\[0.5em]
+       (2 - i \Delta t V(x_2) - \frac{2i \Delta t}{(\Delta x)^2}) \psi ^n _2 + \frac{i \Delta t}{(\Delta t)^2} (\psi ^n _1 + \psi ^n _3 )                       \\[0.5em]
+       \vdots \\[0.5em]
+       (2 - i \Delta t V(x_{J-2}) - \frac{2i \Delta t}{(\Delta x)^2}) \psi ^n _{J-2} + \frac{i \Delta t}{(\Delta t)^2} (\psi ^n _{J-3} + \psi ^n _{J-4} )\\[0.5em]
+       (2 - i \Delta t V(x_{J-1}) - \frac{2i \Delta t}{(\Delta x)^2}) \psi ^n _{J-1} + \frac{i \Delta t}{(\Delta t)^2} (\psi ^n _{J-2} + \psi ^n _J ) + \frac{i \Delta t}{(\Delta x)^2} \psi^{n+1} _J \\[0.5em]
+     \end{bmatrix}
+\nonumber
+\end{equation} \\
+
+There the final part of the first and last row are zero so cancel off leaving the RHS $\psi ^{n+1} _j$ completely dependant on the LHS $\psi^n _j $ for eveny time step.\\
+
+Because this is of the form $\mathbf{A} \underline{x} =\underline{b}$ we can solve the equivalent statement $ \underline{x} =\mathbf{A}^{-1} \underline{b}$. \\
+
+We use the function \emph{complex\_tridiag.c} to solve this.
+
+\end{document}
